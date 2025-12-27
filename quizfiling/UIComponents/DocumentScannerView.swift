@@ -46,9 +46,20 @@ struct DocumentScannerView: UIViewControllerRepresentable {
             for index in 0..<scan.pageCount {
                 images.append(scan.imageOfPage(at: index))
             }
-            let pdfData = scan.pdfData()
+            let pdfData = makePDFData(from: images)
             controller.dismiss(animated: true)
             onComplete(DocumentScanResult(pdfData: pdfData, images: images))
+        }
+
+        private func makePDFData(from images: [UIImage]) -> Data {
+            let renderer = UIGraphicsPDFRenderer(bounds: .zero)
+            return renderer.pdfData { context in
+                for image in images {
+                    let bounds = CGRect(origin: .zero, size: image.size)
+                    context.beginPage(withBounds: bounds, pageInfo: [:])
+                    image.draw(in: bounds)
+                }
+            }
         }
     }
 }
