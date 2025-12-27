@@ -19,13 +19,13 @@ enum SidebarItem: String, CaseIterable, Identifiable {
 }
 
 struct ContentView: View {
-    @State private var selection: SidebarItem? = .library
+    @State private var selection: SidebarItem = .library
 
     var body: some View {
         NavigationSplitView {
             List(SidebarItem.allCases, selection: $selection) { item in
                 Label(item.rawValue, systemImage: item.systemImage)
-                    .tag(item as SidebarItem?)
+                    .tag(item)
             }
             .navigationTitle("QuizFiling")
         } detail: {
@@ -39,8 +39,6 @@ struct ContentView: View {
                     TestModeView()
                 case .settings:
                     SettingsView()
-                case .none:
-                    LibraryView()
                 }
             }
         }

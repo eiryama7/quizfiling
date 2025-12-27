@@ -130,6 +130,16 @@ struct LibraryView: View {
         switch result {
         case .success(let url):
             do {
+                let accessGranted = url.startAccessingSecurityScopedResource()
+                guard accessGranted else {
+                    importError = "ファイルへのアクセス権限が取得できませんでした。"
+                    return
+                }
+                defer {
+                    if accessGranted {
+                        url.stopAccessingSecurityScopedResource()
+                    }
+                }
                 let payload = try importService.importPDF(from: url)
                 let document = DocumentEntity(title: payload.title, fileURLs: payload.filePaths, pageCount: payload.pageCount)
                 context.insert(document)
@@ -148,6 +158,20 @@ struct LibraryView: View {
         switch result {
         case .success(let urls):
             do {
+                var scopedURLs: [URL] = []
+                for url in urls {
+                    if url.startAccessingSecurityScopedResource() {
+                        scopedURLs.append(url)
+                    }
+                }
+                guard scopedURLs.count == urls.count else {
+                    scopedURLs.forEach { $0.stopAccessingSecurityScopedResource() }
+                    importError = "ファイルへのアクセス権限が取得できませんでした。"
+                    return
+                }
+                defer {
+                    scopedURLs.forEach { $0.stopAccessingSecurityScopedResource() }
+                }
                 let payload = try importService.importImages(urls: urls)
                 let document = DocumentEntity(title: payload.title, fileURLs: payload.filePaths, pageCount: payload.pageCount)
                 context.insert(document)
