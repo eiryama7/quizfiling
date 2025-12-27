@@ -90,7 +90,13 @@ final class QuestionRepository {
     }
 
     func attempt(for question: QuestionEntity) throws -> StudyStateEntity? {
-        let descriptor = FetchDescriptor<StudyStateEntity>(predicate: #Predicate { $0.question?.id == Optional(question.id) })
+        // Compare by ensuring the relation exists and ids match to avoid nested optional transforms in the predicate.
+        let qid = question.id
+        let descriptor = FetchDescriptor<StudyStateEntity>(
+            predicate: #Predicate { state in
+                state.question != nil && state.question!.id == qid
+            }
+        )
         return try context.fetch(descriptor).first
     }
 
