@@ -19,7 +19,16 @@ struct TextChunker {
 
     static func extractKeywords(text: String, limit: Int = 6) -> [String] {
         let tokens = text
-            .replacingOccurrences(of: "[^\p{L}\p{N}]", with: " ", options: .regularExpression)
+            .unicodeScalars
+            .map { scalar -> Character in
+                // Keep letters and numbers; replace others with a space
+                if CharacterSet.letters.contains(scalar) || CharacterSet.decimalDigits.contains(scalar) {
+                    return Character(scalar)
+                } else {
+                    return " "
+                }
+            }
+            .reduce("") { String($0) + String($1) }
             .split(separator: " ")
             .map { String($0) }
         var counts: [String: Int] = [:]

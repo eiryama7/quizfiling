@@ -67,12 +67,12 @@ final class DocumentEntity {
     var createdAt: Date
     var updatedAt: Date
     var subject: SubjectEntity?
-    @Attribute(.transformable) var tags: [String]
-    @Attribute(.transformable) var fileURLs: [String]
+    var tags: [String] = []
+    var fileURLs: [String] = []
     var pageCount: Int
-    @Relationship(deleteRule: .cascade, inverse: \\DocumentPageTextEntity.document) var pageTexts: [DocumentPageTextEntity]
-    var ocrFullText: String
-    var summary: String
+    @Relationship(deleteRule: .cascade, inverse: \DocumentPageTextEntity.document) var pageTexts: [DocumentPageTextEntity] = []
+    var ocrFullText: String = ""
+    var summary: String = ""
     var statusRaw: String
     var lastError: String?
 
@@ -117,10 +117,10 @@ final class QuestionEntity {
     @Attribute(.unique) var id: UUID
     var document: DocumentEntity?
     var subject: SubjectEntity?
-    @Attribute(.transformable) var tags: [String]
+    var tags: [String] = []
     var typeRaw: String
     var prompt: String
-    @Attribute(.transformable) var choices: [String]
+    var choices: [String] = []
     var correctIndex: Int?
     var fillBlankAnswer: String?
     var trueFalseAnswer: Bool?
@@ -227,3 +227,4 @@ final class StudyStateEntity {
         self.intervalDays = intervalDays
     }
 }
+
