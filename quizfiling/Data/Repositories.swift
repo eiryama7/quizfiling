@@ -90,8 +90,7 @@ final class QuestionRepository {
     }
 
     func attempt(for question: QuestionEntity) throws -> StudyStateEntity? {
-        let questionID = question.id
-        let descriptor = FetchDescriptor<StudyStateEntity>(predicate: #Predicate { $0.question?.id == questionID })
+        let descriptor = FetchDescriptor<StudyStateEntity>(predicate: #Predicate { $0.question?.id == Optional(question.id) })
         return try context.fetch(descriptor).first
     }
 
